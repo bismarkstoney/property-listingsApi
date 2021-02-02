@@ -1,4 +1,4 @@
-# Image Finder
+# Property Listing API
 
 An API created with express and node for a property listing webapp
 Users/Property owners can either rent/ lease their properties
