@@ -1,0 +1,26 @@
+{
+  "name": "propertityapi",
+  "version": "1.0.0",
+  "description": "Api for Propertity Listings",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Ghana",
+    "properties",
+    "House",
+    "Rent",
+    "Sale"
+  ],
+  "author": "Bismark Obeng",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.11.10",
+    "morgan": "^1.10.0",
+    "slugify": "^1.4.6",
+    "validator": "^13.5.2"
+  }
+}
