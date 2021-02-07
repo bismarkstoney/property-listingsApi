@@ -20,9 +20,27 @@ const listingSchema = new mongoose.Schema({
 			values: ['Apartment', 'Gated', 'House'],
 		},
 	},
-	location: {
+	address: {
 		type: String,
-		required: [true, 'Location is required'],
+		required: [true, 'Please add an address'],
+	},
+	location: {
+		type: {
+			type: String, // Don't do `{ location: { type: String } }`
+			enum: ['Point'], // 'location.type' must be 'Point'
+			required: true,
+		},
+		coordinates: {
+			type: [Number],
+			required: true,
+		},
+
+		formattedAddress: String,
+		street: String,
+		city: String,
+		state: String,
+		zipcode: String,
+		country: String,
 	},
 
 	price: {
@@ -34,19 +52,13 @@ const listingSchema = new mongoose.Schema({
 	bedrooms: {
 		type: Number,
 		required: [true, 'bedrooms is a required field'],
-		min: [1, 'bedroom cannot be zero'],
 	},
 
 	bathrooms: {
 		type: Number,
 		required: [true, 'Bathroom is a required field'],
-		min: [1, 'bedroom cannot be zero'],
 	},
-	washrooms: {
-		type: Number,
-		required: [true, 'Bathroom is a required field'],
-		min: [1, 'bedroom cannot be zero'],
-	},
+
 	squareFeet: {
 		type: Number,
 		required: [true, 'Square feet is a required field'],
@@ -64,24 +76,13 @@ const listingSchema = new mongoose.Schema({
 		enum: ['Yes', 'No'],
 	},
 	totalNumberOfTenants: {
-		type: String,
+		type: Number,
 	},
 	Landlord: {
 		type: String,
 		enum: ['Yes', 'No'],
 	},
-	address: {
-		type: String,
-		required: [true, 'Address is a required field'],
-	},
-	city: {
-		type: String,
-		required: [true, 'City is a required field'],
-	},
-	region: {
-		type: String,
-		required: [true, 'Region is a required field'],
-	},
+
 	phoneNumber: {
 		type: Number,
 		required: [true, 'Phone is a required field'],
