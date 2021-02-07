@@ -21,19 +21,19 @@ exports.createReviews = async (req, res) => {
 //@dsc- get all listings
 //route - Get /api/v1/listing
 //Access - Public
-exports.getListings = async (req, res) => {
+exports.getReviews = async (req, res) => {
 	try {
-		const features = new APIFeatures(Listing.find(), req.query)
+		const features = new APIFeatures(Review.find(), req.query)
 			.filter()
 			.sort()
 			.limitFields()
 			.paginate();
-		const listing = await features.query;
+		const review = await features.query;
 		res.status(200).json({
 			status: 'Sucess',
-			results: listing.length,
+			results: review.length,
 			data: {
-				listing,
+				review,
 			},
 		});
 	} catch (error) {
@@ -46,13 +46,13 @@ exports.getListings = async (req, res) => {
 //@dsc- get all listings
 //route - GET /api/v1/listing/:id
 //Access - Public
-exports.getListing = async (req, res) => {
+exports.getReviews = async (req, res) => {
 	try {
-		const listing = await Listing.findById(req.params.id);
+		const review = await Review.findById(req.params.id);
 		res.status(200).json({
 			status: 'Successs',
 			data: {
-				listing,
+				review,
 			},
 		});
 	} catch (error) {
@@ -62,7 +62,7 @@ exports.getListing = async (req, res) => {
 		});
 	}
 };
-//@dsc-  Delete a listing
+//@dsc-  Delete a review
 //route - DELETE /api/v1/listing/:id
 //Access - Private
 exports.deleteListing = async (req, res) => {
@@ -82,9 +82,9 @@ exports.deleteListing = async (req, res) => {
 //@dsc- Update a listing
 //route - PUT /api/v1/listing/:id
 //Access - Private
-exports.updateListing = async (req, res) => {
+exports.updateReview = async (req, res) => {
 	try {
-		const listing = await Listing.findByIdAndUpdate(req.params.id, req.body, {
+		const review = await Review.findByIdAndUpdate(req.params.id, req.body, {
 			new: true,
 			runValidators: true,
 		});
@@ -92,7 +92,7 @@ exports.updateListing = async (req, res) => {
 			status: 'Successs',
 			message: 'updated',
 			data: {
-				listing,
+				review,
 			},
 		});
 	} catch (error) {
