@@ -39,12 +39,33 @@ class APIFeatures{
     }
 
     paginate(){
+
+       
         const page=this.queryString.page * 1 || 1
         const limit=this.queryString.limit * 1 || 100
-        const skip=(page -1) * limit
-        this.query=this.query.skip(skip).limit(limit)
-    
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const total = await Courses.countDocuments();
+        query = query.skip(startIndex).limit(limit);
 
+
+       
+        const skip=(page -1) * limit
+        this.query=this.query.skip(startIndex).limit(limit)
+    
+        const pagination = {};
+	if (endIndex < total) {
+		pagination.next = {
+			page: page + 1,
+			limit,
+		};
+	}
+	if (startIndex > 0) {
+		pagination.prev = {
+			page: page - 1,
+			limit,
+		};
+	}
         return this
     }
 }
