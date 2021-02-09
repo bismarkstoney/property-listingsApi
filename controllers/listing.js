@@ -1,5 +1,7 @@
+const asyncHandler = require('../middleware/asynhandle');
 const Listing = require('../models/Listing');
 const APIFeatures = require('../utils/apiFeaures');
+const ErrorResponse = require('../utils/errorHandle');
 //@dsc- create a listing
 //route - POST /api/v1/listing
 //Access - Private
@@ -23,7 +25,10 @@ exports.createListing = async (req, res) => {
 //Access - Public
 exports.getListings = async (req, res) => {
 	try {
-		const features = new APIFeatures(Listing.find(), req.query)
+		const features = new APIFeatures(
+			Listing.find().populate({ path: 'reviews', select: 'title description' }),
+			req.query
+		)
 			.filter()
 			.sort()
 			.limitFields()
@@ -84,10 +89,11 @@ exports.deleteListing = async (req, res) => {
 //Access - Private
 exports.updateListing = async (req, res) => {
 	try {
-		const listing = await Listing.findByIdAndUpdate(req.params.id, req.body, {
+		const listing = await Listing.findById(req.params.id, req.body, {
 			new: true,
 			runValidators: true,
 		});
+		Listing.remove();
 		res.status(200).json({
 			status: 'Successs',
 			message: 'updated',
@@ -102,3 +108,31 @@ exports.updateListing = async (req, res) => {
 		});
 	}
 };
+
+exports.photoUploadListing = asyncHandler(async (req, res, next) => {
+	const listing = await Listing.findById(req.params.id);
+	if (!listing) {
+		return next(
+			new ErrorResponse(`listing not found for ${req.params.id}`, 404)
+		);
+	}
+	if (!req.files) {
+		return next(new ErrorResponse('Please upload a file', 404));
+	}
+	const file = req.files.file;
+	//make sure the image is a files
+	if (file.mimetype.startsWith('image')) {
+		return next(new ErrorResponse(`Please upload an image `, 400));
+	}
+	if (file.size > process.env.MAX_FILE_UPLOAD) {
+		return next(
+			new ErrorResponse(
+				`Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+				404
+			)
+		);
+	}
+	//CREATE custome file name
+	file.name = `photo_${bootcamp._id}`;
+	console.log(file.name);
+});

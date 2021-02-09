@@ -10,17 +10,18 @@ const ReviewsSchema = new mongoose.Schema({
 	},
 	description: {
 		type: String,
-		required: [true, 'Descrption is required'],
+		required: [true, 'Description is required'],
 		maxlength: [500, 'Title cannot be more than 200 characters'],
 		minlength: [5, 'Title cannot be less 5 characters'],
 	},
 	rating: { type: Number },
 	listing: {
-		type: mongoose.SchemaTypes.ObjectId,
-		ref: 'Listing',
+		type: mongoose.Schema.ObjectId,
+		ref: 'Listings',
+		required: true,
 	},
 	user: {
-		type: mongoose.SchemaTypes.ObjectId,
+		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 	},
 });
