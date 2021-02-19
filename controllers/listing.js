@@ -2,6 +2,9 @@ const asyncHandler = require('../middleware/asynhandle');
 const Listing = require('../models/Listing');
 const APIFeatures = require('../utils/apiFeaures');
 const ErrorResponse = require('../utils/errorHandle');
+const multer = require('multer');
+
+const upload = multer({ dest: 'public/img/listings' });
 //@dsc- create a listing
 //route - POST /api/v1/listing
 //Access - Private
@@ -117,12 +120,13 @@ exports.photoUploadListing = asyncHandler(async (req, res, next) => {
 		);
 	}
 	if (!req.files) {
-		return next(new ErrorResponse('Please upload a file', 404));
+		return next(new ErrorResponse('Please upload a file', 400));
 	}
 	const file = req.files.file;
+	console.log(file);
 	//make sure the image is a files
-	if (file.mimetype.startsWith('image')) {
-		return next(new ErrorResponse(`Please upload an image `, 400));
+	if (!file.mimetype.startsWith('image')) {
+		return next(new ErrorResponse(`Please upload an image file`, 400));
 	}
 	if (file.size > process.env.MAX_FILE_UPLOAD) {
 		return next(
