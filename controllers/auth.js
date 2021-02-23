@@ -11,14 +11,15 @@ exports.register = asyncHandler(async (req, res, next) => {
 	const { name, email, password, role } = req.body;
 
 	const user = await User.create({ name, email, password, role });
-	//CREATE A TOKEN
-	const token = user.getSignedJwtToken();
+	// //CREATE A TOKEN
+	// const token = user.getSignedJwtToken();
 
-	res.status(200).json({
-		success: true,
-		message: 'Register',
-		token,
-	});
+	// res.status(200).json({
+	// 	success: true,
+	// 	message: 'Register',
+	// 	token,
+	// });
+	sendTokenResponse(user, 200, res);
 });
 
 exports.login = asyncHandler(async (req, res, next) => {
@@ -38,11 +39,47 @@ exports.login = asyncHandler(async (req, res, next) => {
 		return next(new ErrorResponse('Ïnvalid credentails', 401));
 	}
 	//CREATE A TOKEN
+	// const token = user.getSignedJwtToken();
+
+	// res.status(200).json({
+	// 	success: true,
+	// 	message: 'login',
+	// 	token,
+	// });
+
+	sendTokenResponse(user, 200, res);
+});
+
+//get token from model, create cookie and send response
+const sendTokenResponse = (user, statusCode, res) => {
+	//CREATE A TOKEN
 	const token = user.getSignedJwtToken();
+	const options = {
+		expires: new Date(
+			Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+		),
+
+		httpOnly: true,
+	};
+	if (process.env.NODE_ENV === 'production') {
+		options.secure = true;
+	}
+	res.status(statusCode).cookie('token', token, options).json({
+		success: true,
+		token,
+	});
+};
+
+//@dsc- Get current logged in user
+//route - POST /api/v1/auth/me
+//Access - Public
+exports.getMe = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user.id);
 
 	res.status(200).json({
 		success: true,
-		message: 'Register',
-		token,
+		data: {
+			user,
+		},
 	});
 });

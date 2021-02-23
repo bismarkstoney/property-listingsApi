@@ -8,49 +8,53 @@ const upload = multer({ dest: 'public/img/listings' });
 //@dsc- create a listing
 //route - POST /api/v1/listing
 //Access - Private
-exports.createListing = async (req, res) => {
-	try {
-		const listing = await Listing.create(req.body);
-		res.status(200).json({
-			status: 'Sucess',
-			results: listing.length,
-			data: {
-				listing,
-			},
-		});
-	} catch (error) {
-		console.log(error.message);
+exports.createListing = asyncHandler(async (req, res, next) => {
+	//add user to request req.body
+	req.body.user = req.user.id;
+	//check for published listing by realtoe
+	const realtor = await Listing.findOne({ user: require.user.id });
+
+	//if user is not an admin, they can only add on listing
+	if (realtor && req.user.role !== 'admin') {
+		return next(
+			new ErrorResponse(
+				`The user with ID ${req.user.id} has already publishe a listing`,
+				400
+			)
+		);
 	}
-};
+
+	const listing = await Listing.create(req.body);
+	res.status(200).json({
+		status: 'Sucess',
+		results: listing.length,
+		data: {
+			listing,
+		},
+	});
+});
 
 //@dsc- get all listings
 //route - Get /api/v1/listing
 //Access - Public
-exports.getListings = async (req, res) => {
-	try {
-		const features = new APIFeatures(
-			Listing.find().populate({ path: 'reviews', select: 'title description' }),
-			req.query
-		)
-			.filter()
-			.sort()
-			.limitFields()
-			.paginate();
-		const listing = await features.query;
-		res.status(200).json({
-			status: 'Sucess',
-			results: listing.length,
-			data: {
-				listing,
-			},
-		});
-	} catch (error) {
-		res.status(404).json({
-			status: 'Fialed',
-			message: error.message,
-		});
-	}
-};
+exports.getListings = asyncHandler(async (req, res, next) => {
+	const features = new APIFeatures(
+		Listing.find().populate({ path: 'reviews', select: 'title description' }),
+		req.query
+	)
+		.filter()
+		.sort()
+		.limitFields()
+		.paginate();
+	const listing = await features.query;
+	res.status(200).json({
+		status: 'Sucess',
+		results: listing.length,
+		data: {
+			listing,
+		},
+	});
+});
 //@dsc- get all listings
 //route - GET /api/v1/listing/:id
 //Access - Public
